@@ -42,7 +42,7 @@ const SearchBar = () => {
         <IoIosArrowDown className={`transition-all duration-300 ${isDropDown ? "rotate-180" : ""}`} />
       </button>
       {isDropDown &&
-        <div className='absolute top-0 left-0 mt-12 rounded-md border box-border border-black w-1/3 bg-white flex flex-col gap-2'>
+        <div className='absolute top-0 z-30 left-0 mt-12 rounded-md border box-border border-black w-1/3 bg-white flex flex-col gap-2'>
           <div
             className='hover:bg-[#509E2F] px-5 py-1 cursor-pointer'
             onClick={() => handleCategorySelect("All Categories")}

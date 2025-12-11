@@ -15,6 +15,9 @@ export const SearchContext = createContext();
 
 export const SearchProvider = ({ children }) => {
 
+  const [menu, setMenu] = useState(false)
+  const [isOr, setIsOr] = useState(false)
+
   const [currentInput, setCurrentInput] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("")
   const [selectedArea, setSelectedArea] = useState("")
@@ -30,6 +33,18 @@ export const SearchProvider = ({ children }) => {
 
   const debounceRef = useRef(null);
 
+  const handleIsOr = () => {
+    const nextMode = !isOr
+    setIsOr(prev => !prev)
+
+    const filters = getCurrentFilters()
+    searchMeals(filters, nextMode)
+  }
+
+  const handleMenu = () => {
+    setMenu(prev => !prev)
+  }
+
   const getCurrentFilters = () => ({
     name: currentInput,
     category: selectedCategory,
@@ -41,7 +56,7 @@ export const SearchProvider = ({ children }) => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
       searchMeals(filters);
-    }, 400);
+    }, 800);
   };
 
   const handleFilterChange = ({ name, category, ingredient, area }) => {
@@ -72,14 +87,6 @@ export const SearchProvider = ({ children }) => {
     });
   }
 
-  const handleInputUpdate = (value) => {
-    setCurrentInput(value)
-  }
-
-  const handleCategoryChange = (categoryName) => {
-    setSelectedCategory(categoryName)
-  }
-
   useEffect(() => {
     const loadOptiones = async () => {
       try {
@@ -100,11 +107,24 @@ export const SearchProvider = ({ children }) => {
     searchMeals({ name: "", category: "", ingredient: "", area: "" });
   }, [])
 
-  const searchMeals = async ({ name, ingredient, category, area }) => {
+  const searchMeals = async ({ name, ingredient, category, area }, orLogic = isOr) => {
     setLoading(true);
     setError(null);
 
     try {
+
+      if (!name && !category && !ingredient && !area) {
+        const res = await fetch("https://www.themealdb.com/api/json/v1/1/search.php?s=");
+        const data = await res.json();
+        const list = data.meals || [];
+
+        setTimeout(() => {
+          setMeals(list);
+          setLoading(false);
+        }, 800)
+        return;
+      }
+
       let results = [];
       const promises = [];
 
@@ -116,30 +136,51 @@ export const SearchProvider = ({ children }) => {
       const allResults = await Promise.all(promises);
       console.log(allResults)
 
-      if (!name && !category && !ingredient && !area) {
-        const res = await fetch("https://www.themealdb.com/api/json/v1/1/search.php?s=");
-        const data = await res.json();
-        setTimeout(() => {
-          setMeals(data.meals || []);
-          setLoading(false);
-        }, 300)
-        return;
+      if (orLogic) {
+        const merged = allResults
+          .filter(Boolean)
+          .flat();
+
+        // dedupe by idMeal
+        const map = new Map();
+        merged.forEach(meal => {
+          if (!map.has(meal.idMeal)) {
+            map.set(meal.idMeal, meal);
+          }
+        });
+
+        results = Array.from(map.values());
       } else {
         // Intersect results by idMeal
-        results = allResults.reduce((acc, curr) => {
+        results = allResults.filter(Boolean).reduce((acc, curr) => {
           if (acc.length === 0) return curr;
           const ids = new Set(curr.map(meal => meal.idMeal));
           return acc.filter(meal => ids.has(meal.idMeal));
         }, []);
       }
-      console.log(results)
+
+      if (results.length === 0) {
+        setTimeout(() => {
+          setMeals([]);
+          setLoading(false);
+        }, 800);
+        return;
+      }
+
+      const detailedMeals = await Promise.all(
+        results.map(meal => fetchMealById(meal.idMeal))
+      );
+
+      const finalResults = detailedMeals.filter(Boolean);
+      console.log('final Resluts:', finalResults)
+
+
       setTimeout(() => {
-        setMeals(results)
-      }, 300)
+        setMeals(finalResults)
+        setLoading(false)
+      }, 800)
     } catch (err) {
       setError('Failed to fetch meals with filters');
-      setLoading(false);
-    } finally {
       setLoading(false);
     }
   };
@@ -152,7 +193,7 @@ export const SearchProvider = ({ children }) => {
 
     loading,
     error,
-    
+
     selectedArea,
     selectedIngredient,
     selectedCategory,
@@ -160,6 +201,12 @@ export const SearchProvider = ({ children }) => {
 
     handleFilterChange,
     handleSearchTrigger,
+
+    menu,
+    handleMenu,
+
+    isOr,
+    handleIsOr,
   };
 
   return (

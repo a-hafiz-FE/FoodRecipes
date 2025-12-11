@@ -28,7 +28,7 @@ export const fetchMealsByArea = async (area) => {
 export const fetchMealById = async (id) => {
   const res = await fetch(`${BASE_URL}/lookup.php?i=${id}`)
   const data = await res.json()
-  return data.meals
+  return data.meals?.[0] || null
 }
 
 export const fetchAllCategories = async () => {

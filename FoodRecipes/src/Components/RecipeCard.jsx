@@ -9,7 +9,8 @@ const RecipeCard = ({
   title,
   video,
   date,
-  category
+  category,
+  area,
 }) => {
 
   const formatDate = (rawDate) => {
@@ -26,12 +27,15 @@ const RecipeCard = ({
   };
 
   return (
-    <div className='bg-white text-black shadow-sm rounded-2xl inset-shadow-sm p-1'>
+    <div className='bg-white h-fit text-black shadow-sm rounded-2xl inset-shadow-sm p-1 cursor-pointer hover:scale-105'>
       <div className='flex flex-col'>
         <CustomImage imgSrc={image} imgAlt={title} className={'aspect-4/3 rounded-2xl'} />
 
         <section className='flex flex-col px-4 py-4'>
-          <Typography className={'font-medium text-[10px] text-[#A1A1A1]'}>{category}</Typography>
+          <section className='flex gap-1'>
+            <Typography className={'font-medium text-[10px] text-[#A1A1A1]'}>{area}</Typography>
+            <Typography className={'font-medium text-[10px] text-[#A1A1A1]'}>{category}</Typography>
+          </section>
 
           <section className='flex justify-between'>
             <Typography className={'font-bold text-xl max-w-[200px] text-ellipsis overflow-hidden'}>{title}</Typography>
