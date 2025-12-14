@@ -1,5 +1,6 @@
 import Main from '../../Layout/Main'
 import RecipeCard from '../../Components/RecipeCard'
+import SkeltonCard from '../../Components/SkeltonCard'
 import { useSearch } from '../../Services/SearchContext'
 
 const Home = () => {
@@ -13,7 +14,17 @@ const Home = () => {
 
 
   if (loading) {
-    return <h2 className='flex w-full justify-center mt-100'>Loading recipes ...</h2>;
+    return (
+      <>
+        <div className='bg-white grid grid-cols-3 h-fit gap-4 py-10 px-20 text-white'>
+          {meals.map(meal => (
+            <SkeltonCard
+              key={meal.idMeal}
+            />
+          ))}
+        </div>
+      </>
+    )
   }
 
   if (error) {

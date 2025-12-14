@@ -118,8 +118,8 @@ export const SearchProvider = ({ children }) => {
         const data = await res.json();
         const list = data.meals || [];
 
+        setMeals(list);
         setTimeout(() => {
-          setMeals(list);
           setLoading(false);
         }, 800)
         return;
@@ -160,8 +160,8 @@ export const SearchProvider = ({ children }) => {
       }
 
       if (results.length === 0) {
+        setMeals([]);
         setTimeout(() => {
-          setMeals([]);
           setLoading(false);
         }, 800);
         return;
@@ -175,9 +175,9 @@ export const SearchProvider = ({ children }) => {
       console.log('final Resluts:', finalResults)
 
 
+      setMeals(finalResults);
       setTimeout(() => {
-        setMeals(finalResults)
-        setLoading(false)
+        setLoading(false);
       }, 800)
     } catch (err) {
       setError('Failed to fetch meals with filters');
