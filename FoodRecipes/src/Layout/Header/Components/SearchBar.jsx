@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { IoIosArrowDown } from "react-icons/io";
 import { IoIosSearch } from "react-icons/io";
 import Typography from '../../../Components/Typography';
@@ -6,6 +6,8 @@ import { useSearch } from '../../../Services/SearchContext';
 import CustomImage from '../../../Components/CustomImage';
 
 const SearchBar = () => {
+
+  const ref = useRef(null)
 
   const {
     categories,
@@ -25,6 +27,11 @@ const SearchBar = () => {
     }
   }
 
+  const handleDropDown = () => {
+    setIsDropDown(prev => !prev)
+    ref.current.focus()
+  }
+
   const handleCategorySelect = (categoryName) => {
     handleFilterChange({
       category: categoryName === "All Categories" ? '' : categoryName
@@ -36,13 +43,13 @@ const SearchBar = () => {
     <section className='relative w-full flex items-center gap-2 bg-[#F3F3F3] pl-3 rounded-md'>
 
       <button
-        onClick={() => setIsDropDown(prev => !prev)}
+        onClick={handleDropDown}
         className='flex gap-1 items-center cursor-pointer'>
         <Typography >{selectedCategory || "All Categories"}</Typography>
         <IoIosArrowDown className={`transition-all duration-300 ${isDropDown ? "rotate-180" : ""}`} />
       </button>
       {isDropDown &&
-        <div className='absolute top-0 z-30 left-0 mt-12 rounded-md border box-border border-black w-1/3 bg-white flex flex-col gap-2'>
+        <div ref={ref} className='absolute top-0 z-30 left-0 mt-12 rounded-md border box-border border-black w-1/3 bg-white flex flex-col gap-2'>
           <div
             className='hover:bg-[#509E2F] px-5 py-1 cursor-pointer'
             onClick={() => handleCategorySelect("All Categories")}
@@ -52,7 +59,7 @@ const SearchBar = () => {
           {categories.map((cat) => (
             <div
               key={cat.id}
-              className='hover:bg-[#509E2F] flex px-5 py-1 cursor-pointer'
+              className='hover:bg-[#509E2F] focus:bg-[#509e2f] flex px-5 py-1 cursor-pointer'
               onClick={() => handleCategorySelect(cat.name)}
             >
               <div className='flex gap-2'>

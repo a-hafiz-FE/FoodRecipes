@@ -3,6 +3,7 @@ import RecipeCard from '../../Components/RecipeCard'
 import SkeltonCard from '../../Components/SkeltonCard'
 import { useSearch } from '../../Services/SearchContext'
 
+
 const Home = () => {
 
   const {
@@ -41,6 +42,7 @@ const Home = () => {
         {meals.map(meal => (
           <RecipeCard
             key={meal.idMeal}
+            id={meal.idMeal}
             image={meal.strMealThumb}
             title={meal.strMeal}
             video={meal.strYoutube}

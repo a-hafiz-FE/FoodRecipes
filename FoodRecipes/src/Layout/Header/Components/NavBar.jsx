@@ -1,4 +1,6 @@
-
+import {
+  Link,
+} from 'react-router-dom';
 
 const NavBar = () => {
 
@@ -11,11 +13,12 @@ const NavBar = () => {
   return (
     <nav className="flex gap-6">
       {navLinks.map((link) => (
-        <button
-          key={link.name}
-          className="cursor-pointer hover:text-[#509E2F]" >
-          {link.name}
-        </button>
+        <Link key={link.name} to={`/`}>
+          <button
+            className="cursor-pointer hover:text-[#509E2F]" >
+            {link.name}
+          </button>
+        </Link>
       ))}
     </nav>
   )

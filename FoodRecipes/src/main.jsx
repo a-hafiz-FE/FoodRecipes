@@ -3,14 +3,16 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
 import { SearchProvider } from './Services/SearchContext.jsx'
-import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
+import { BrowserRouter } from 'react-router-dom';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <SkeletonTheme baseColor="#202020" highlightColor="#444">
-      <SearchProvider>
+
+    <SearchProvider>
+      <BrowserRouter>
         <App />
-      </SearchProvider>
-    </SkeletonTheme>
-  </StrictMode>,
+      </BrowserRouter>
+    </SearchProvider>
+
+  </StrictMode >,
 )
