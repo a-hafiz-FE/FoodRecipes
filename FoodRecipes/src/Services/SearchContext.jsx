@@ -201,6 +201,7 @@ export const SearchProvider = ({ children }) => {
 
     handleFilterChange,
     handleSearchTrigger,
+    fetchMealById,
 
     menu,
     handleMenu,
