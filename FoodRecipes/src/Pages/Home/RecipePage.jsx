@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Main from '../../Layout/Main'
 import Typography from '../../Components/Typography'
 import { useSearch } from '../../Services/SearchContext'

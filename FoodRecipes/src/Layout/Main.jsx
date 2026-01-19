@@ -2,7 +2,6 @@ import Header from './Header/Header'
 import Footer from './Footer/Footer'
 import { useSearch } from '../Services/SearchContext'
 import SideMenu from './Side/SideMenu'
-import { useState } from 'react'
 
 const Main = (WrappedComponent) => {
 
