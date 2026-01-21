@@ -1,4 +1,3 @@
-import React from 'react'
 import SkeltonCard from '../Components/SkeltonCard'
 import { useSearch } from '../Services/SearchContext'
 

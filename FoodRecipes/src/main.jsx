@@ -2,20 +2,18 @@ import { StrictMode, Suspense } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
-import { SearchProvider } from './Services/SearchContext.jsx'
 import { BrowserRouter } from 'react-router-dom';
-import Loading from './Components/Loading.jsx'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
+const queryClinet = new QueryClient();
 createRoot(document.getElementById('root')).render(
   <StrictMode>
 
-    <SearchProvider>
+    <QueryClientProvider client={queryClinet}>
       <BrowserRouter>
-        <Suspense fallback={<Loading />}>
-          <App />
-        </Suspense>
+        <App />
       </BrowserRouter>
-    </SearchProvider>
+    </QueryClientProvider>
 
   </StrictMode >,
 )

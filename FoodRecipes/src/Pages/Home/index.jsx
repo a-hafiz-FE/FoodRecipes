@@ -1,51 +1,71 @@
 import Main from '../../Layout/Main'
 import RecipeCard from '../../Components/RecipeCard'
-import { useSearch } from '../../Services/SearchContext'
-import Loading from '../../Components/Loading'
+import {
+  fetchMealsByName,
+  createNewProduct,
+} from '../../Services/apiServices'
+import { useQuery } from '@tanstack/react-query'
+import Header from '../../Layout/Header/Header'
+import { useState } from 'react'
+
 
 
 const Home = () => {
 
-  const {
-    meals,
-    loading,
-    error,
-  } = useSearch();
+  const [searchValue, setSearchValue] = useState("")
 
+  const { data: meals, error } = useQuery({
+    queryKey: ["mealsData", searchValue],
+    queryFn: () => fetchMealsByName(searchValue),
+    staleTime: 0.5 * 60 * 1000,
+    refetchOnMount: true,
+    gcTime: 0.5 * 60 * 1000,
+    retry: 2,
+    retryDelay: 60 * 1000,
+    select: (res) => res.meals ?? [],
+  });
 
+  console.log(meals)
+  console.log("searchValue: " + searchValue)
 
-  if (loading) {
-    return (
-      <Loading />
-    )
+  const handleSearchValue = (name) => {
+    setSearchValue(name)
+    console.log("Input Value: " + name)
   }
+
+  
+
 
   if (error) {
-    return <h2 className='text-red-600 flex w-full justify-center mt-100'>Error: {error}</h2>;
-  }
-
-  if (meals.length === 0) {
-    return <h2 className='flex w-full mt-100 justify-center'>no data found</h2>
+    return <div>error</div>
   }
 
   return (
     <>
-      <div className='bg-white grid grid-cols-3 h-fit gap-4 py-10 px-20 text-white'>
-        {meals.map(meal => (
-          <RecipeCard
-            key={meal.idMeal}
-            id={meal.idMeal}
-            image={meal.strMealThumb}
-            title={meal.strMeal}
-            video={meal.strYoutube}
-            date={meal.dateModified}
-            category={meal.strCategory}
-            area={meal.strArea}
-          />
-        ))}
+      <div className='flex flex-col'>
+        
+
+        <Header handleSearchValue={handleSearchValue} searchValue={searchValue} />
+
+        
+
+        <div className='bg-white grid grid-cols-3 h-fit gap-4 py-10 px-20 text-white'>
+          {meals?.map(meal => (
+            <RecipeCard
+              key={meal.idMeal}
+              id={meal.idMeal}
+              image={meal.strMealThumb}
+              title={meal.strMeal}
+              video={meal.strYoutube}
+              date={meal.dateModified}
+              category={meal.strCategory}
+              area={meal.strArea}
+            />
+          ))}
+        </div>
       </div>
     </>
   )
 }
 
-export default Main(Home)
+export default Home
