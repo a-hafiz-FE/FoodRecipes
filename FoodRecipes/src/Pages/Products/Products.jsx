@@ -8,6 +8,7 @@ import {
   deleteProduct,
   updateProduct,
 } from '../../Services/apiServices'
+import { contactDialog } from '../../Components/contactDialog'
 
 const Products = () => {
 
@@ -51,9 +52,9 @@ const Products = () => {
 
   const mutationDelete = useMutation({
     mutationFn: (id) => deleteProduct(id),
-    onSuccess: () => {
+    onSuccess: (id) => {
       // show success toast
-      toast(`Product Deleted`, {
+      toast(`Product ${id.id} Deleted`, {
         duration: 2000,
         position: 'top-right',
         style: {
@@ -83,10 +84,10 @@ const Products = () => {
   });
 
   const mutationUpdate = useMutation({
-    mutationFn: (id) => updateProduct(id),
-    onSuccess: (id) => {
+    mutationFn: ({ id, data }) => updateProduct(id, data),
+    onSuccess: (_, variables) => {
       // show success toast
-      toast(`Product ${id} Updated`, {
+      toast(`Product ${variables.id} Updated`, {
         duration: 2000,
         position: 'top-right',
         style: {
@@ -123,15 +124,15 @@ const Products = () => {
 
   console.log(products)
 
-
   return (
     <div className='bg-gray-300'>
       <Toaster />
 
       <section className='flex justify-center'>
-        <section className='bg-gray-400 rounded-2xl p-10 flex flex-col gap-4 items-center justify-center'>
+        <section className='bg-gray-400 rounded-2xl p-10 mt-20 flex flex-col gap-4 items-center justify-center'>
           <input
             type="text"
+            name='name'
             className='bg-white rounded-2xl px-4 py-2'
             placeholder='Name'
             value={name}
@@ -139,6 +140,7 @@ const Products = () => {
           />
           <input
             type="number"
+            name='number'
             className='bg-white rounded-2xl px-4 py-2'
             placeholder='Number'
             value={number}
@@ -146,8 +148,9 @@ const Products = () => {
           {
             <button
               type='submit'
-              className='cursor-pointer border border-amber-100 mt-10 hover:bg-amber-300 hover:border-amber-700 box-border rounded-2xl p-2 bg-amber-500'
+              className='cursor-pointer border disabled:opacity-30 border-amber-100 mt-10 hover:bg-amber-300 hover:border-amber-700 box-border rounded-2xl p-2 bg-amber-500'
               onClick={() => mutation.mutate({ id: new Date().toDateString, name: name, number: parseInt(number, 10) })}
+              disabled={!number || !name}
             >
               Create Product
             </button>
@@ -167,13 +170,21 @@ const Products = () => {
 
             <div className='flex mt-4 justify-between'>
               <button
-                className='border rounded-lg px-6 py-1 cursor-pointer bg-gray-400'
+                className='border rounded-lg px-6 py-1 cursor-pointer bg-gray-600'
+                onClick={() => {
+                  contactDialog.open("form", {
+                    title: "Edit Product",
+                    productData: product,
+                    onUpdate: mutationUpdate.mutateAsync,
+                  });
+                }}
               >
                 Edit
               </button>
+              <contactDialog.Viewport />
               <button
                 className='border rounded-lg px-4 py-1 cursor-pointer bg-red-500/50'
-                onClick={() => mutationDelete.mutate(product.id)}
+                onClick={() => mutationDelete.mutate(product.id, product)}
               >
                 Delete
               </button>
